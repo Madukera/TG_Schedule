@@ -5,14 +5,21 @@ Token = open("token.txt", "r")
 storeToken = Token.read()
 bot = telebot.TeleBot(storeToken)
 
+'''
+@bot.message_handler(content_types=['help', 'start'])
+def send_welcome(message):
+    if message.txt == "Hello":
+        bot.send_message(message.from_user.id, "Hi, how can I help you?")
+    elif message.txt == "/help":
+        bot.send_message(message.from_user.id, "Write \'Hello\'")
+    else:
+        bot.send_message(message.from_user.id, "I don't understand you")
+'''
 
 @bot.message_handler(content_types=['text'])
-def send_welcome(message):
-    if message.txt == "Привет":
-        bot.send_message(message.from_user.id, "Привет, чем могу помочь?")
-    elif message.txt == "/help":
-        bot.send_message(message.from_user.id, "Напиши Привет")
-    else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю")
+def echo_message(message):
+    bot.reply_to(message, message.text)
+    bot.send_message(message.from_user.id, "Hello")
+    print(message.from_user.id)
 
-bot.polling(none_stop=True, interval=0)
+bot.infinity_polling()
