@@ -1,4 +1,5 @@
 import telebot
+import json
 
 # Import and store your API-token from toke.txt file
 Token = open("token.txt", "r")
@@ -18,8 +19,11 @@ def send_welcome(message):
 
 @bot.message_handler(content_types=['text'])
 def echo_message(message):
-    bot.reply_to(message, message.text)
-    bot.send_message(message.from_user.id, "Hello")
-    print(message.from_user.id)
+    user_id = message.from_user.id
+    messsage_text = message.text
+    if messsage_text.lower() == "hello":
+        bot.reply_to(message, str(user_id))
+    else:
+        bot.send_message(user_id, message.text)
 
 bot.infinity_polling()
