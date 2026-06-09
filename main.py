@@ -1,7 +1,6 @@
 import telebot
 import json
 from datetime import datetime, timedelta
-import time
 
 # Import and store your API-token from toke.txt file
 with open("token.txt", "r") as file:
@@ -27,7 +26,7 @@ def send_welcome(message):
 def echo_message(message):
     user_id = message.from_user.id
     message_text = message.text
-    if message_text.lower() == "hello":
+    if message_text.lower() == "who is cleaning":
         bot.reply_to(message, str(user_id))
     else:
         bot.send_message(user_id, message.text)
@@ -37,12 +36,13 @@ def load_data_json():
         data = json.load(date)
         return data
 
-
 def get_current_monday():
     today = datetime.today()
     monday_convert = today - timedelta(days = today.weekday())
     monday = monday_convert.strftime("%Y-%m-%d")
     return monday
+
+# this function count next monday based of today datetime.today()
 
 def get_next_monday():
     current = get_current_monday()
@@ -50,16 +50,22 @@ def get_next_monday():
     next_monday = next_monday_date + timedelta(days = 7)
     return next_monday.strftime("%Y-%m-%d")
 
+
 def check_schedule():
-    with open("users.json", "r") as date:
-        date = json.load(date)
+    load = load_data_json()
+    current = get_current_monday()
+    next_monday = get_next_monday()
+
+    for entry in load["schedule"]:
+        if entry["week_start"] == current:
+            print(f"On this week cleaning: {entry["name"]}")
+        if entry["week_start"] == next_monday:
+            print(f"On next week cleaning: {entry["name"]}")
 
 
-
-x = get_current_monday()
-y = get_next_monday()
-print(y)
-
+x = check_schedule()
 
 
 bot.infinity_polling()
+
+
