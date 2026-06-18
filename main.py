@@ -1,6 +1,7 @@
 import telebot
-from telebot import types
 import json
+#from apscheduler.schedulers.background import BackgroundScheduler
+from telebot import types
 from datetime import datetime, timedelta
 
 # Import and store your API-token from token.txt file
@@ -14,7 +15,7 @@ bot = telebot.TeleBot(storeToken)
 def start(message):
     bot.reply_to(message, "Hi, you just launched the cleaning bot! type \"/cleaning\"")
 
-@bot.message_handler(commands=['cleaning'])
+#@bot.message_handler(commands=['cleaning'])
 def check_schedule(message):
     load = load_data_json()
     current = get_current_saturday()
@@ -26,10 +27,11 @@ def check_schedule(message):
         if entry["week_start"] == next_saturday:
             bot.send_message(message.from_user.id, f" On next week cleaning: {entry["name"]}")
 
-@bot.message_handler(commands=['button'])
+# Bot message with button
+@bot.message_handler(commands=['cleaning'])
 def button_message(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("cleaning")
+    item1 = types.KeyboardButton("who is cleaning?")
     markup.add(item1)
     bot.send_message(message.chat.id, "Choose your schedule", reply_markup=markup)
 
@@ -38,15 +40,22 @@ def button_message(message):
 def echo_message(message):
     user_id = message.from_user.id
     message_text = message.text
-    if message_text.lower() == "cleaning":
+    if message_text.lower() == "who is cleaning?":
         # bot.send_message(user_id, message.text)
         # bot.reply_to(message, str(user_id))
         check_schedule(message)
         print(f"Someone request user_id: {user_id}")
-        print(f"request user_id: {user_id}")
     else:
         # bot.send_message(user_id, message.text)
         print(f"Non request user_id: {user_id}")
+
+def get_user_id(name):
+    load = load_data_json()
+    for user in load["users"]:
+        if user["name"] == name:
+            return user["user_id"]
+
+print(get_user_id("Valerii"))
 
 
 def load_data_json():
