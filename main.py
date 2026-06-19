@@ -45,23 +45,24 @@ def echo_message(message):
         # bot.reply_to(message, str(user_id))
         check_schedule(message)
         print(f"Someone request user_id: {user_id}")
+        bot.reply_to(message, f"Someone request user_id: {message.from_user.username}")
     else:
         # bot.send_message(user_id, message.text)
         print(f"Non request user_id: {user_id}")
+
+def load_data_json():
+    with open("users.json", "r") as date:
+        data = json.load(date)
+        return data
 
 def get_user_id(name):
     load = load_data_json()
     for user in load["users"]:
         if user["name"] == name:
             return user["user_id"]
+    return None
 
-print(get_user_id("Valerii"))
-
-
-def load_data_json():
-    with open("users.json", "r") as date:
-        data = json.load(date)
-        return data
+print(get_user_id("Feliks"))
 
 def get_current_saturday():
     today = datetime.today()
