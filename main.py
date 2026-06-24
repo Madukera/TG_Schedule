@@ -1,6 +1,7 @@
+import apscheduler.schedulers.background
 import telebot
 import json
-#from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from telebot import types
 from datetime import datetime, timedelta
 
@@ -90,6 +91,12 @@ def get_next_saturday():
     next_saturday = next_saturday_date + timedelta(days = 7)
     return next_saturday.strftime("%Y-%m-%d")
 
+def RadScheduler():
+    phon = BackgroundScheduler()
+    phon.add_job(reminder, trigger = 'cron', day_of_week=5, hour=9)
+    phon.start()
 
 
+
+RadScheduler()
 bot.infinity_polling(none_stop=True)
