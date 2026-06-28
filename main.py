@@ -1,4 +1,3 @@
-import apscheduler.schedulers.background
 import telebot
 import json
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -72,7 +71,7 @@ def reminder():
     load = load_data_json()
     current = get_current_saturday()
     for entry in load["schedule"]:
-        if entry["week_start"] == current:
+        if entry["week_start"] == datetime.today():
                 user_id = get_user_id(entry["name"])
                 if user_id is not None:
                     bot.send_message(user_id, f"{entry["name"]}, you are cleaning on this week, don't forget:)")
@@ -91,12 +90,14 @@ def get_next_saturday():
     next_saturday = next_saturday_date + timedelta(days = 7)
     return next_saturday.strftime("%Y-%m-%d")
 
-def RadScheduler():
+
+def radscheduler():
     phon = BackgroundScheduler()
-    phon.add_job(reminder, trigger = 'cron', day_of_week=5, hour=9)
+    #phon.add_job(reminder, trigger = 'cron', day_of_week=5, hour=9)
+    phon.add_job(reminder, trigger='date', run_date=datetime(2026, 6, 28, 14, 18, 30))
     phon.start()
 
 
 
-RadScheduler()
+radscheduler()
 bot.infinity_polling(none_stop=True)
