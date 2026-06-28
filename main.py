@@ -14,6 +14,7 @@ bot = telebot.TeleBot(storeToken)
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Hi, you just launched the cleaning bot! type \"/cleaning\"")
+    print(f"Someone started bot: {message.from_user.id}")
 
 # Bot message with button
 @bot.message_handler(commands=['cleaning'])
@@ -21,7 +22,7 @@ def button_message(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("who is cleaning?")
     markup.add(item1)
-    bot.send_message(message.chat.id, "Choose your schedule", reply_markup=markup)
+    bot.send_message(message.chat.id, "Choose option", reply_markup=markup)
 
 def check_schedule(message):
     found_current = False
@@ -68,15 +69,21 @@ def get_user_id(name):
     return None
 
 def reminder():
+    found = False
     load = load_data_json()
     current = get_current_saturday()
     for entry in load["schedule"]:
-        if entry["week_start"] == datetime.today():
-                user_id = get_user_id(entry["name"])
-                if user_id is not None:
-                    bot.send_message(user_id, f"{entry["name"]}, you are cleaning on this week, don't forget:)")
-                else:
-                    print(f"None for: user_id \"{entry["name"]}\"")
+        if entry["week_start"] == current:
+            found = True
+            user_id = get_user_id(entry["name"])
+            if user_id is not None:
+                bot.send_message(user_id, f"{entry["name"]}, you are cleaning on this week, don't forget:)")
+            else:
+                print(f"User not found: \"{entry['name']}\"")
+
+    if not found:
+        print("There are no dates or there are empty")
+
 
 def get_current_saturday():
     today = datetime.today()
@@ -93,8 +100,7 @@ def get_next_saturday():
 
 def radscheduler():
     phon = BackgroundScheduler()
-    #phon.add_job(reminder, trigger = 'cron', day_of_week=5, hour=9)
-    phon.add_job(reminder, trigger='date', run_date=datetime(2026, 6, 28, 14, 18, 30))
+    phon.add_job(reminder, trigger = 'cron', day_of_week=5, hour=9)
     phon.start()
 
 
